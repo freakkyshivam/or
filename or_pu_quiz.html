@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OR Quiz — BCA-4004</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #f0c040;
+    --green: #3dffa0;
+    --red: #ff4d6d;
+    --muted: #5a5a7a;
+    --text: #e8e8f0;
+    --subtext: #8888aa;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .header-meta {
+    font-size: 0.7rem;
+    color: var(--subtext);
+  }
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.75rem;
+  }
+  .score-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+  }
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    border-radius: 2px;
+  }
+  .progress-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 24px 24px;
+    animation: slideIn 0.35s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-size: 0.65rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opt {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--subtext);
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  .opt .opt-letter {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .opt.correct {
+    border-color: var(--green);
+    background: rgba(61, 255, 160, 0.06);
+    color: var(--green);
+  }
+  .opt.correct .opt-letter { background: var(--green); color: #000; }
+  .opt.wrong {
+    border-color: var(--red);
+    background: rgba(255, 77, 109, 0.06);
+    color: var(--red);
+  }
+  .opt.wrong .opt-letter { background: var(--red); color: #fff; }
+  .opt:disabled { cursor: default; }
+
+  .explanation {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: rgba(240, 192, 64, 0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.78rem;
+    color: var(--subtext);
+    line-height: 1.6;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent); }
+
+  /* NAV BUTTONS */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    gap: 12px;
+  }
+  .btn {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--subtext);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+  .btn.primary:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .result-screen.show { display: block; }
+  .result-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 5rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .result-sub {
+    font-size: 0.85rem;
+    color: var(--subtext);
+    margin: 12px 0 32px;
+  }
+  .breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto 32px;
+  }
+  .breakdown-cell {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 12px;
+  }
+  .breakdown-cell .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+  .breakdown-cell .lbl {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .breakdown-cell.c .val { color: var(--green); }
+  .breakdown-cell.w .val { color: var(--red); }
+  .breakdown-cell.s .val { color: var(--accent); }
+
+  .verdict {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    padding: 14px 20px;
+    border-radius: 6px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .verdict.good { background: rgba(61,255,160,0.08); color: var(--green); border: 1px solid var(--green); }
+  .verdict.mid  { background: rgba(240,192,64,0.08); color: var(--accent); border: 1px solid var(--accent); }
+  .verdict.bad  { background: rgba(255,77,109,0.08); color: var(--red);    border: 1px solid var(--red);    }
+
+  /* REVIEW MODE */
+  .review-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* START SCREEN */
+  .start-screen {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .start-screen h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .start-screen p {
+    color: var(--subtext);
+    font-size: 0.8rem;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+  .mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 420px;
+    margin: 0 auto 28px;
+  }
+  .mode-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .mode-card:hover, .mode-card.selected {
+    border-color: var(--accent);
+  }
+  .mode-card.selected { background: rgba(240,192,64,0.06); }
+  .mode-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .mode-card p {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin: 0;
+  }
+  .count-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .count-row label { font-size: 0.75rem; color: var(--subtext); }
+  .count-row select {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .count-row select:focus { outline: none; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- START SCREEN -->
+  <div class="main" id="startScreen">
+    <div class="start-screen">
+      <h1>BCA-4004 // OR</h1>
+      <p>100 questions from your actual PU paper.<br>Pick a mode and get to work.</p>
+
+      <div class="mode-grid">
+        <div class="mode-card selected" id="modeInstant" onclick="selectMode('instant')">
+          <h3>⚡ Instant</h3>
+          <p>See correct answer right after each question</p>
+        </div>
+        <div class="mode-card" id="modeExam" onclick="selectMode('exam')">
+          <h3>📋 Exam</h3>
+          <p>No feedback till the end — real exam feel</p>
+        </div>
+      </div>
+
+      <div class="count-row">
+        <label>Questions:</label>
+        <select id="countSelect">
+          <option value="25">25 (Quick)</option>
+          <option value="50">50 (Half)</option>
+          <option value="75" selected>75 (Target)</option>
+          <option value="100">100 (Full)</option>
+        </select>
+        <label>Order:</label>
+        <select id="orderSelect">
+          <option value="shuffle">Shuffled</option>
+          <option value="original">Original</option>
+        </select>
+      </div>
+
+      <button class="btn primary" onclick="startQuiz()">START QUIZ →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quizScreen" style="display:none;">
+    <div class="header">
+      <div>
+        <div class="header-title">OR // BCA-4004</div>
+        <div class="header-meta">PSIT Pre-University Paper</div>
+      </div>
+      <div class="score-bar">
+        <span style="font-size:0.7rem;color:var(--subtext)">SCORE</span>
+        <span class="score-pill" id="liveScore">0/0</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel">Q 0 of 0</div>
+    </div>
+    <div class="main">
+      <div class="q-card" id="qCard">
+        <div class="q-number" id="qNumber">Q 1</div>
+        <div class="q-text" id="qText"></div>
+        <div class="options" id="options"></div>
+        <div class="explanation" id="explanation"></div>
+      </div>
+      <div class="nav">
+        <button class="btn" id="btnPrev" onclick="prevQ()" disabled>← PREV</button>
+        <button class="btn primary" id="btnNext" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="main" id="resultScreen" style="display:none;">
+    <div class="result-screen show">
+      <div class="result-big" id="resultPct">--%</div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="breakdown">
+        <div class="breakdown-cell c"><div class="val" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+        <div class="breakdown-cell w"><div class="val" id="rWrong">0</div><div class="lbl">Wrong</div></div>
+        <div class="breakdown-cell s"><div class="val" id="rSkipped">0</div><div class="lbl">Skipped</div></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <button class="btn primary" onclick="restartQuiz()" style="margin-right:10px">↺ RESTART</button>
+      <button class="btn" onclick="reviewMistakes()">REVIEW WRONG</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  { q:"Depreciation refers to ________.", opts:["Increase in machine value","Decrease in value of asset over time","Increase in profit","Reduction in production"], ans:1, exp:"Depreciation = reduction in value of an asset over time due to wear, age, or obsolescence." },
+  { q:"Which method is used when the time value of money is ignored?", opts:["Average cost method","Present worth method","Discounting method","Net present value method"], ans:0, exp:"Average cost method ignores time value of money — it just averages total cost over the asset's life." },
+  { q:"Preventive replacement means:", opts:["Replacement before failure","Replacement after failure","Replacement randomly","Replacement never"], ans:0, exp:"Preventive replacement = replacing items before they fail to avoid sudden breakdown." },
+  { q:"Which cost is NOT generally considered in replacement analysis?", opts:["Maintenance cost","Replacement cost","Scrap value","Advertising cost"], ans:3, exp:"Advertising cost has nothing to do with replacement analysis. Maintenance, replacement cost, and scrap value are all relevant." },
+  { q:"In the context of equipment that deteriorates with age, when is the optimal replacement time reached?", opts:["When the capital cost is fully recovered","When the maintenance cost for the next year exceeds the average annual cost to date","When the scrap value reaches zero","Exactly halfway through the physical life"], ans:1, exp:"Optimal replacement: when next year's maintenance cost > average annual cost so far. Classic result from replacement theory." },
+  { q:"All equality constraints can be replaced equivalently by _______ inequalities.", opts:["1","2","3","4"], ans:1, exp:"One equality constraint = two inequalities (≤ and ≥). So one equality → 2 inequalities." },
+  { q:"The similarity between assignment problem and transportation problem is _______.", opts:["Both are rectangular matrices","Both are square matrices","Both can be solved by graphical method","Both have objective function and non-negativity constraints"], ans:3, exp:"Both have an objective function and non-negativity constraints — that's the common structural feature." },
+  { q:"The term Operations Research was coined in the year:", opts:["1950","1940","1978","1960"], ans:3, exp:"OR was coined around 1940 during World War II. The answer marked is 1960 — but historically it's 1940. Careful: your paper's answer key marks D (1960). Go with D for exam safety." },
+  { q:"Linear programming technique is used to allocate scarce resources in an optimum manner in problems of ______.", opts:["Schedule","Product Mix","Both A and B","Servicing Cost"], ans:2, exp:"LPP handles scheduling, product mix, and many resource allocation problems." },
+  { q:"The word 'programming' means:", opts:["Systematically","Rapidly","Slowly","Instantly"], ans:0, exp:"In OR context, 'programming' = planning/scheduling systematically, not computer programming." },
+  { q:"In Game theory, fair game is widely used in — the value of the game is:", opts:["Economics","Business decisions","Military strategy","All of these"], ans:3, exp:"Game theory applies to economics, business decisions, and military strategy — all three." },
+  { q:"A game with fixed strategies and payoffs is called:", opts:["Deterministic game","Random game","Dynamic game","Stochastic game"], ans:0, exp:"Fixed strategies + fixed payoffs = Deterministic game." },
+  { q:"The optimal strategy gives:", opts:["Minimum loss","Maximum gain","Best possible expected payoff","Random payoff"], ans:2, exp:"The optimal (mixed) strategy gives the best possible expected payoff, not necessarily max gain or min loss in every instance." },
+  { q:"Replacement theory in Operations Research deals with:", opts:["Production planning","Decision of replacing old assets","Inventory storage","Demand forecasting"], ans:1, exp:"Replacement theory = deciding when to replace deteriorating or failing assets." },
+  { q:"Replacement problems generally arise due to ___:", opts:["Decreasing demand","Deterioration or failure of equipment","Increase in supply","Market competition"], ans:1, exp:"The primary cause of replacement problems is equipment deterioration or sudden failure." },
+  { q:"The starting node of a project network is called:", opts:["Terminal event","Initial event","Dummy event","Critical event"], ans:1, exp:"Starting node = Initial event (source node)." },
+  { q:"Free float is the time by which an activity can be delayed without affecting:", opts:["Project start","Next activity start","Project cost","Dummy activity"], ans:1, exp:"Free float = delay possible without delaying the earliest start of the next activity." },
+  { q:"Total float is the difference between:", opts:["Latest start and earliest start","Earliest finish and latest finish","Event numbers","Costs"], ans:0, exp:"Total Float = Latest Start − Earliest Start (or equivalently Latest Finish − Earliest Finish)." },
+  { q:"Operations research is the application of ___ methods to arrive at the optimal solutions to the problems:", opts:["Economical","Scientific","A and B both","Artistic"], ans:2, exp:"OR uses both economical and scientific methods." },
+  { q:"Which technique is used in finding a solution for optimizing a given objective, such as profit maximization or cost reduction under certain constraints?", opts:["Quailing Theory","Waiting Line","Both A and B","Linear Programming"], ans:3, exp:"Linear Programming is the classic technique for optimizing an objective under constraints." },
+  { q:"In graphical method the restriction on number of constraints is ___.", opts:["2","Not more than 3","3","None of the above"], ans:0, exp:"Graphical method works with 2 decision variables — hence max 2 constraints practically visualized. But technically answer is 2." },
+  { q:"The purpose of the stepping-stone method is to:", opts:["Develop the initial solution to the transportation problem","Assist in moving from an initial feasible solution to the optimal solution","Determine whether a given solution is feasible or not","Identify the relevant costs in a transportation problem"], ans:1, exp:"Stepping-stone method improves an existing feasible solution toward optimality." },
+  { q:"In a transportation problem, we must make the number of ___ and ___ equal.", opts:["Destinations; sources","Units supplied; units demanded","Columns; rows","Positive cost coefficients; negative cost coefficients"], ans:1, exp:"For a balanced TP: total supply = total demand." },
+  { q:"If an opportunity cost value is used for an unused cell to test optimality, it should be:", opts:["Equal to zero","Most negative number","Most positive number","Any value"], ans:0, exp:"At optimality, all opportunity costs (ui+vj−cij) for non-basic cells should be ≤ 0 (for minimization). If equal to zero — alternative optima exist." },
+  { q:"The dual of the dual is ___:", opts:["Dual-primal","Primal-dual","Dual","Primal"], ans:3, exp:"The dual of the dual = the original primal problem." },
+  { q:"Critical path determines:", opts:["Minimum project duration","Maximum project duration","Average duration","Random duration"], ans:1, exp:"Critical path = longest path = maximum project duration = minimum time to complete project." },
+  { q:"The earliest start time of first activity is usually:", opts:["1","0","5","10"], ans:1, exp:"By convention, the project starts at time 0." },
+  { q:"Network technique helps in:", opts:["Project planning","Scheduling","Control","All of these"], ans:3, exp:"Network techniques (PERT/CPM) help in planning, scheduling, and controlling projects." },
+  { q:"PERT is widely used in:", opts:["Research and development projects","Banking","Retail trade","Agriculture"], ans:0, exp:"PERT handles uncertain activity times — ideal for R&D projects." },
+  { q:"The last node of a project network is called:", opts:["Initial event","Dummy event","Terminal event","Slack event"], ans:2, exp:"Last node = Terminal event (sink node)." },
+  { q:"Light bulbs and electronic components usually fall under:", opts:["Gradual failure","Sudden failure","Partial failure","Constant failure"], ans:1, exp:"Light bulbs fail suddenly — they work fine until they just stop. Classic sudden failure example." },
+  { q:"When maintenance cost increases with time, replacement should be done when:", opts:["Maintenance cost becomes zero","Average cost is minimum","Purchase cost increases","Demand increases"], ans:1, exp:"Replace when total average annual cost is at its minimum." },
+  { q:"Replacement of items that fail suddenly is usually analyzed using ___.", opts:["Probability theory","Game theory","Queuing theory","Transportation model"], ans:0, exp:"Sudden failure items → probability theory used to analyze failure distributions." },
+  { q:"In group replacement policy:", opts:["Items are replaced only after failure","All items are replaced together at fixed intervals","Items are never replaced","Items are replaced randomly"], ans:1, exp:"Group replacement = replace all items at fixed intervals regardless of individual failure." },
+  { q:"The cost that increases with age of equipment is:", opts:["Items Purchase cost","Maintenance cost","Installation cost","Transportation cost"], ans:1, exp:"Maintenance cost increases as equipment ages — core concept of replacement analysis." },
+  { q:"_______ occurs when the number of occupied cells is less than m+n-1.", opts:["Degeneracy","Infeasibility","Unboundedness","Unbalance"], ans:0, exp:"Degeneracy in TP: basic feasible solution has fewer than m+n-1 occupied cells." },
+  { q:"The equation Ui + Vj = Cij is used to calculate ___.", opts:["An improvement index for the stepping-stone method","The opportunity costs for using a particular route","The MODI cost values (Ui, Vj)","The degeneracy index E. optimality test"], ans:2, exp:"Ui + Vj = Cij is the MODI method equation used to calculate u and v values." },
+  { q:"One disadvantage of using North-West Corner rule to find initial solution to the transportation problem is that:", opts:["It is complicated to use","It does not take into account cost of transportation","It leads to a degenerate initial solution","All of the above"], ans:1, exp:"NWC rule ignores costs entirely — it's purely positional. That's its main drawback." },
+  { q:"The large negative opportunity cost value in an unused cell in a transportation table is chosen to improve the current solution because:", opts:["It represents per unit cost reduction","It represents per unit cost improvement","It ensures no rim requirement violation","None of the above"], ans:1, exp:"Most negative opportunity cost = greatest improvement per unit shifted to that cell." },
+  { q:"In an assignment problem involving 5 workers and 5 jobs, total number of assignments possible are:", opts:["5","10","15","20"], ans:0, exp:"5! = 120 possible assignments — but the number of optimal assignments from the matrix is 5 (one per worker). The answer is 5." },
+  { q:"If a row dominates another row, the dominated row can be:", opts:["Ignored","Multiplied","Added","Transposed"], ans:0, exp:"Dominated strategy is eliminated (ignored) in game theory." },
+  { q:"Game theory was developed by:", opts:["John Nash","Von Neumann and Morgenstern","Fisher","Samuelson"], ans:1, exp:"Game theory founded by John von Neumann and Oskar Morgenstern (1944 book)." },
+  { q:"The graphical method is mainly used for:", opts:["2×2 games","2×n or m×2 games","3×3 games","4×4 games"], ans:1, exp:"Graphical method works when at least one dimension is 2 — i.e., 2×n or m×2 games." },
+  { q:"The row minimum values are used to find:", opts:["Minimax","Maximin","Average payoff","Probability"], ans:1, exp:"Row minima → take maximum = Maximin (row player's strategy)." },
+  { q:"In a fair game, the value of the game is:", opts:["Positive","Negative","Zero","Infinite"], ans:2, exp:"Fair game = value of game is zero. No player has an inherent advantage." },
+  { q:"What is the objective function in linear programming problems?", opts:["A constraint for available resource","An objective for research and development of a company","A linear function in an optimization problem","A set of non-negativity conditions"], ans:2, exp:"Objective function = linear function to be maximized or minimized." },
+  { q:"Feasible solution satisfies ___.", opts:["Only constraints","Only non-negative restriction","(A) and (B) both","(A), (B) and Optimum solution"], ans:2, exp:"Feasible solution must satisfy all constraints AND non-negativity restrictions." },
+  { q:"In Degenerate solution value of objective function ___.", opts:["Increases infinitely","Basic variables are nonzero","Decreases infinitely","One or more basic variables are zero"], ans:3, exp:"Degeneracy = one or more basic variables = 0. The basis has zero-valued basic variables." },
+  { q:"In graphical representation the bounded region is known as ___ region.", opts:["Solution","Feasible solution","Basic solution","Optimal"], ans:1, exp:"The feasible region is the bounded (or unbounded) region satisfying all constraints." },
+  { q:"In LPP the condition to be satisfied is:", opts:["Constraints have to be linear","Objective function has to be linear","None of the above","Both (A) and (B)"], ans:3, exp:"LPP requires BOTH constraints AND objective function to be linear." },
+  { q:"An event in a network diagram represents:", opts:["Start or completion of an activity","Cost of project","Duration of project","Resource allocation"], ans:0, exp:"Events = points in time representing start or completion of activities." },
+  { q:"A dummy activity is represented by:", opts:["Solid arrow","Dotted arrow","Circle","Square"], ans:1, exp:"Dummy activity = dotted/dashed arrow. It has zero duration and cost." },
+  { q:"The earliest occurrence time of an event is determined by:", opts:["Backward pass","Forward pass","Random method","Dominance rule"], ans:1, exp:"Forward pass calculates earliest event times (EST)." },
+  { q:"The Slack of an event is equal to:", opts:["Latest time − Earliest time","Earliest time − Latest time","Activity time − Event time","Total time"], ans:0, exp:"Slack = LFT − EFT = LST − EST = Latest time − Earliest time." },
+  { q:"PERT uses how many time estimates?", opts:["One","Two","Three","Four"], ans:2, exp:"PERT uses three estimates: Optimistic (a), Pessimistic (b), Most likely (m)." },
+  { q:"Which of the following is NOT an objective of sequencing?", opts:["Reduce idle time","Minimize total time","Maximize waiting time","Improve machine utilization"], ans:2, exp:"Maximizing waiting time is NEVER an objective. You want to minimize it." },
+  { q:"To solve n jobs through 3 machines (M1, M2, M3) using Johnson's Rule, what condition must be met?", opts:["Min(M1) ≥ Max(M2)","Min(M3) ≥ Max(M2)","Either A or B","Both A and B"], ans:3, exp:"For 3-machine Johnson's rule: Min(M1) ≥ Max(M2) OR Min(M3) ≥ Max(M2). Either condition converts it to a 2-machine problem." },
+  { q:"Total elapsed time T is calculated as:", opts:["Sum of all processing times on Machine 1","Sum of all processing times on Machine 2","Time at which the last job in the sequence finishes on the last machine","Total idle time minus total processing time"], ans:2, exp:"T = time when the last job finishes on the last machine." },
+  { q:"What happens if there is a tie in the minimum processing time on the same machine?", opts:["Any of the tied jobs can be chosen arbitrarily","The problem cannot be solved","The job with the higher processing time on the other machine is chosen","The first job in alphabetical order is chosen"], ans:0, exp:"Ties in sequencing: any tied job can be chosen — the final elapsed time won't differ." },
+  { q:"'No passing' rule in sequencing means:", opts:["Jobs cannot be skipped","A machine cannot process two jobs at once","The order of jobs cannot change as they move from one machine to another","Machines cannot be moved"], ans:2, exp:"No passing = job order is fixed across all machines. A job can't overtake another." },
+  { q:"Which of the following is a common assumption in sequencing problems?", opts:["Each machine can process more than one job at a time","Processing times are independent of the order of jobs","A job can be started on a machine before it finishes on the previous one","Jobs can be cancelled mid-process"], ans:1, exp:"Processing times are assumed to be independent of job order — standard sequencing assumption." },
+  { q:"CPM stands for:", opts:["Critical Path Model","Critical Path Method","Cost Planning Method","Control Path Method"], ans:1, exp:"CPM = Critical Path Method. Deterministic durations, focus on cost-time trade-off." },
+  { q:"PERT is mainly used for:", opts:["Deterministic projects","Probabilistic projects","Linear programming","Inventory control"], ans:1, exp:"PERT = probabilistic activity times. Used when durations are uncertain." },
+  { q:"In network analysis, the longest path in a project network is called:", opts:["Short path","Critical path","Dummy path","Event path"], ans:1, exp:"Critical path = longest path from start to end. Determines project duration." },
+  { q:"Activities on the critical path have:", opts:["Maximum float","Zero float","Negative float","Infinite float"], ans:1, exp:"Critical activities have zero total float — no slack at all." },
+  { q:"In job sequencing, a job once started on a machine:", opts:["Can be stopped midway","Must be completed without interruption","Can skip machine","Can repeat"], ans:1, exp:"Non-preemption assumption: once started, a job runs to completion on that machine." },
+  { q:"Sequencing problems mainly aim to minimize:", opts:["Production cost","Idle time and elapsed time","Number of machines","Transportation cost"], ans:1, exp:"Sequencing goal = minimize total elapsed time and machine idle time." },
+  { q:"Job sequencing problems are solved under:", opts:["Deterministic conditions","Random conditions","Uncertain conditions","Dynamic conditions"], ans:3, exp:"Job sequencing involves dynamic programming concepts — dynamic conditions." },
+  { q:"Job sequencing is related to:", opts:["Machine scheduling","Game theory","Replacement theory","Simulation"], ans:0, exp:"Job sequencing = machine scheduling. Assigning jobs to machines in optimal order." },
+  { q:"Sequencing problems are common in:", opts:["Manufacturing systems","Agriculture","Banking","Tourism"], ans:0, exp:"Sequencing is a manufacturing/production management concept." },
+  { q:"Johnson's rule selects:", opts:["Largest processing time first","Smallest processing time first","Random processing time","Average processing time"], ans:1, exp:"Johnson's algorithm: always pick the job with the minimum processing time across all machines." },
+  { q:"In sequencing problems, machines are assumed to be:", opts:["Always available","Frequently broken","Optional","Temporary"], ans:0, exp:"Standard assumption: machines are always available when needed." },
+  { q:"The number of sequences possible for n jobs is:", opts:["n","n²","n!","2ⁿ"], ans:2, exp:"n jobs can be sequenced in n! ways. For 4 jobs = 24 sequences." },
+  { q:"In sequencing problems, each job must be processed:", opts:["On all machines","On one machine only","On two machines randomly","On no machine"], ans:1, exp:"Each job passes through each machine exactly once in the prescribed order." },
+  { q:"Which measure indicates machine efficiency in sequencing?", opts:["Idle time","Processing time","Utilization","Waiting time"], ans:0, exp:"Idle time is the key efficiency metric — less idle time = better machine utilization." },
+  { q:"In replacement models, the 'Capital Cost' of an asset is defined as:", opts:["The total amount of interest paid on the loan","Purchase price minus the scrap value","The initial price of the asset only","The total maintenance cost over the asset's life"], ans:2, exp:"Capital cost = initial purchase price of the asset (sometimes also treated as P - S in some models, but the answer here is C — initial price only)." },
+  { q:"If the discount rate is r, the present value (PV) of a cost C incurred at the end of year n is calculated as:", opts:["C×(1+r)ⁿ","C−(r×n)","C/(r×n)","C×(1+r)⁻ⁿ"], ans:3, exp:"PV = C/(1+r)ⁿ = C×(1+r)⁻ⁿ. Standard discounting formula." },
+  { q:"In sudden failure problems, if P(n) is the probability of failure in period n, what must the sum of all P(n) over the life of the item equal?", opts:["1","The discount rate","The number of items in the group","0"], ans:0, exp:"Sum of all probabilities over life = 1. Basic probability axiom." },
+  { q:"In a replacement problem where the money value is NOT considered, the total cost for n years is:", opts:["(C-S)+Σ(Mi)","(C-S)/Σ(Mi)","(C+S)-Σ(Mi)","C+S+Mn"], ans:0, exp:"Total cost (no time value) = Capital cost (C-S) + cumulative maintenance costs Σ(Mi)." },
+  { q:"When the smallest processing time occurs on Machine 1, the job is placed:", opts:["At the beginning","At the end","In the middle","Randomly"], ans:0, exp:"Johnson's rule: min on M1 → schedule that job first (beginning of sequence)." },
+  { q:"The strategies available to players are listed in a:", opts:["All Payoff matrix","Balance sheet","Histogram","Probability table"], ans:0, exp:"The payoff matrix lists all available strategies and their outcomes for players." },
+  { q:"When players choose strategies with probabilities, it is called:", opts:["Pure strategy","Mixed strategy","Dominant strategy","Linear strategy"], ans:1, exp:"Using probabilities to choose strategies = Mixed strategy." },
+  { q:"A saddle point exists when:", opts:["Maximin = Minimax","Maximin > Minimax","Maximin < Minimax","None"], ans:0, exp:"Saddle point exists iff Maximin = Minimax. This gives the value of the game." },
+  { q:"A game without a saddle point requires:", opts:["Pure strategy solution","Mixed strategy solution","No solution","Graphical solution only"], ans:1, exp:"No saddle point → no pure strategy solution → must use mixed strategies." },
+  { q:"Dominance principle helps to:", opts:["Add strategies","Eliminate inferior strategies","Increase payoff","Change players"], ans:1, exp:"Dominance rule eliminates strategies that are always worse than another — simplifies the game." },
+  { q:"If all aij values in the entering variable column of the simplex table are negative, then:", opts:["Solution is unbounded","Solution is degenerate","There exist no solution","Multiple solutions exist"], ans:0, exp:"All negative column ratios → no minimum ratio → solution is unbounded." },
+  { q:"In maximization cases, _______ are assigned to the artificial variables as their coefficients in the objective function:", opts:["+M","-M","0","None of the above"], ans:1, exp:"Big-M method: artificial variables get -M coefficient in maximization (to penalize them out)." },
+  { q:"In simplex method, we add ___ variables in the case of '=':", opts:["Slack Variable","Surplus Variable","Artificial Variable","None of the above"], ans:2, exp:"Equality constraints need artificial variables to create an initial basic feasible solution." },
+  { q:"Once the initial basic feasible solution has been computed, what is the next step in the problem?", opts:["VAM","MODI","Optimality Test","None of the above"], ans:1, exp:"After IBF solution → apply MODI method to test and achieve optimality." },
+  { q:"The allocation cells in the transportation table will be called ___ cell.", opts:["Occupied","Unoccupied","No","Finite"], ans:0, exp:"Cells with allocations = occupied (basic) cells." },
+  { q:"Mathematical model of linear programming problem is important because:", opts:["It helps in converting the verbal description and numerical data into mathematical expression","Decision makers prefer to work with formal models","It captures the relevant relationship among decision factors","It enables the use of algebraic technique"], ans:0, exp:"The primary reason: mathematical model converts verbal/numerical problem into a solvable mathematical form." },
+  { q:"The minimum number of lines covering all zeros in a reduced cost matrix of order n can be:", opts:["At the most n","At the least n","n-1","n+1"], ans:0, exp:"Hungarian method: min lines to cover all zeros ≤ n. When it equals n, optimal assignment found." },
+  { q:"If an artificial variable is present in the basic variable column of optimal simplex table, then the problem has ___ solution.", opts:["Alternative","No Solution","Bounded","Infeasible"], ans:3, exp:"Artificial variable in optimal basis at non-zero level → problem is infeasible." },
+  { q:"Game theory is primarily concerned with:", opts:["Random events","Strategic decision making","Accounting rules","Inventory control"], ans:1, exp:"Game theory = mathematical framework for strategic decision making in conflict situations." },
+  { q:"A zero-sum game means:", opts:["All players lose","All players gain","One player's gain equals another's loss","No player gains"], ans:2, exp:"Zero-sum: one player's gain = other's loss. Total payoff = 0." },
+  { q:"Identify the type of the feasible region given by x-y≤1, x-y≥2 where both x and y are positive:", opts:["A triangle","A rectangle","An unbounded region","An empty region"], ans:3, exp:"x-y≤1 AND x-y≥2 simultaneously is impossible (no x,y satisfies both). Empty region = infeasible." },
+  { q:"With the transportation technique, the initial solution can be generated in any fashion. The only restriction is that:", opts:["The edge constraints for supply and demand are satisfied","The solution is not degenerate","The solution must be optimal","One must use the northwest-corner method"], ans:0, exp:"Any initial solution just needs to satisfy supply and demand constraints (rim requirements)." },
+  { q:"Which of the following is a method for improving an initial solution in a transportation problem?", opts:["Northwest-corner","Intuitive lowest-cost","Southeast-corner rule","Stepping-stone"], ans:3, exp:"Stepping-stone method improves the initial solution. NWC and VAM find initial solutions, not improve them." },
+  { q:"The procedure used to solve assignment problems wherein one reduces the original assignment costs to a table of opportunity costs is called ___.", opts:["Stepping-stone method","Matrix reduction","MODI method","Northwest reduction"], ans:1, exp:"Hungarian method = matrix reduction. Subtract row/column minima to create opportunity cost table." },
+  { q:"An assignment problem can be viewed as a special case of transportation problem in which the capacity from each source is ___ and the demand at each destination is ___.", opts:["1; 1","Infinity; infinity","0; 0","1000; 1000"], ans:0, exp:"Assignment problem: each source supplies exactly 1 unit, each destination demands exactly 1 unit." },
+];
+
+let mode = 'instant';
+let questions = [];
+let current = 0;
+let answers = new Array(100).fill(null);
+let correct = 0;
+let wrong = 0;
+
+function selectMode(m) {
+  mode = m;
+  document.getElementById('modeInstant').classList.toggle('selected', m==='instant');
+  document.getElementById('modeExam').classList.toggle('selected', m==='exam');
+}
+
+function shuffle(arr) {
+  let a = [...arr];
+  for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function startQuiz() {
+  const count = parseInt(document.getElementById('countSelect').value);
+  const order = document.getElementById('orderSelect').value;
+  questions = order === 'shuffle' ? shuffle(ALL_QUESTIONS).slice(0, count) : ALL_QUESTIONS.slice(0, count);
+  answers = new Array(questions.length).fill(null);
+  current = 0; correct = 0; wrong = 0;
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[current];
+  const total = questions.length;
+  document.getElementById('qNumber').textContent = `Q ${current+1} of ${total}`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('progressFill').style.width = ((current+1)/total*100)+'%';
+  document.getElementById('progressLabel').textContent = `Q ${current+1} of ${total}`;
+  document.getElementById('liveScore').textContent = `${correct}/${current}`;
+  document.getElementById('btnPrev').disabled = current === 0;
+  document.getElementById('btnNext').textContent = current === total-1 ? 'FINISH ✓' : 'NEXT →';
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const exp = document.getElementById('explanation');
+  exp.className = 'explanation';
+
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${o}</span>`;
+    btn.onclick = () => selectAnswer(i);
+
+    if(answers[current] !== null) {
+      btn.disabled = true;
+      if(i === q.ans) btn.classList.add('correct');
+      else if(i === answers[current]) btn.classList.add('wrong');
+      if(mode === 'instant') showExplanation();
+    }
+    opts.appendChild(btn);
+  });
+}
+
+function selectAnswer(i) {
+  if(answers[current] !== null) return;
+  answers[current] = i;
+  const q = questions[current];
+  if(i === q.ans) correct++; else wrong++;
+  renderQ();
+  if(mode === 'instant') showExplanation();
+}
+
+function showExplanation() {
+  const q = questions[current];
+  const exp = document.getElementById('explanation');
+  const letters = ['A','B','C','D'];
+  exp.innerHTML = `<strong>Answer: (${letters[q.ans]}) ${q.opts[q.ans]}</strong><br>${q.exp}`;
+  exp.classList.add('show');
+}
+
+function nextQ() {
+  if(current === questions.length - 1) { showResult(); return; }
+  current++;
+  renderQ();
+}
+
+function prevQ() {
+  if(current > 0) { current--; renderQ(); }
+}
+
+function showResult() {
+  const total = questions.length;
+  const skipped = answers.filter(a=>a===null).length;
+  // recalculate in exam mode
+  let c=0,w=0;
+  questions.forEach((q,i)=>{ if(answers[i]===q.ans) c++; else if(answers[i]!==null) w++; });
+  const pct = Math.round(c/total*100);
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('resultScreen').style.display='block';
+  document.getElementById('resultPct').textContent = pct+'%';
+  document.getElementById('resultSub').textContent = `${c} correct out of ${total} questions`;
+  document.getElementById('rCorrect').textContent = c;
+  document.getElementById('rWrong').textContent = w;
+  document.getElementById('rSkipped').textContent = skipped;
+  const v = document.getElementById('verdict');
+  if(pct>=80){ v.className='verdict good'; v.textContent='🔥 Strong. Keep this up.'; }
+  else if(pct>=60){ v.className='verdict mid'; v.textContent='⚠️ Decent, but gaps remain. Review wrong ones NOW.'; }
+  else { v.className='verdict bad'; v.textContent='❌ Below target. You need another round today.'; }
+}
+
+function restartQuiz() {
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
+}
+
+function reviewMistakes() {
+  const wrongQs = questions.filter((q,i) => answers[i] !== null && answers[i] !== q.ans);
+  if(wrongQs.length === 0) { alert("No wrong answers to review!"); return; }
+  questions = wrongQs;
+  answers = new Array(questions.length).fill(null);
+  current = 0; correct = 0; wrong = 0;
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  mode = 'instant';
+  renderQ();
+}
+</script>
+</body>
+</html>

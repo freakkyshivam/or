@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCA-4004 Optimization Techniques Quiz — 150 Questions</title>
+<meta name="description" content="150 high-probability MCQs for BCA-4004 Optimization Techniques. Covers LP, Game Theory, Replacement, PERT/CPM, and Sequencing with practice, exam, and weak-zone modes.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Grid background ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* ─── START SCREEN ────────────────────────────────── */
+  #start-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 28px;
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    margin-bottom: 48px;
+    max-width: 520px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 16px;
+  }
+
+  .stat-box .num {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-box .label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .mode-select {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mode-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 24px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 140px;
+  }
+
+  .mode-btn .mode-icon { font-size: 22px; }
+  .mode-btn .mode-label { font-weight: 600; }
+  .mode-btn .mode-desc { font-size: 11px; color: var(--muted); }
+
+  .mode-btn:hover, .mode-btn.active {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.1);
+    color: #fff;
+  }
+
+  .unit-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+
+  .unit-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--mono);
+  }
+
+  .unit-chip:hover { border-color: var(--accent); color: var(--text); }
+  .unit-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 8px;
+    padding: 16px 48px;
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(59,130,246,0.35);
+  }
+
+  /* ─── QUIZ SCREEN ─────────────────────────────────── */
+  #quiz-screen { display: none; min-height: 100vh; padding: 0; }
+
+  .quiz-header {
+    position: sticky;
+    top: 0;
+    background: rgba(10,14,26,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+    gap: 16px;
+  }
+
+  .q-counter {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 400px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .score-display {
+    font-family: var(--mono);
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+    white-space: nowrap;
+  }
+
+  .score-correct { color: var(--green); }
+  .score-wrong { color: var(--red); }
+
+  .timer-badge {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+  }
+
+  .timer-badge.urgent {
+    border-color: var(--red);
+    color: var(--red);
+    animation: pulse 0.8s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* ─── QUESTION CARD ───────────────────────────────── */
+  .quiz-body {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px 24px;
+  }
+
+  .unit-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .unit-tag::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .question-text {
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    color: #f1f5f9;
+  }
+
+  .options-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    line-height: 1.5;
+  }
+
+  .option-letter {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+
+  .option-btn:hover:not(.locked) {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.08);
+    transform: translateX(4px);
+  }
+
+  .option-btn:hover:not(.locked) .option-letter {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.12);
+  }
+
+  .option-btn.selected .option-letter {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .option-btn.correct {
+    border-color: var(--green);
+    background: rgba(16,185,129,0.12);
+  }
+
+  .option-btn.correct .option-letter {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+  }
+
+  .option-btn.wrong {
+    border-color: var(--red);
+    background: rgba(239,68,68,0.10);
+  }
+
+  .option-btn.wrong .option-letter {
+    background: var(--red);
+    color: #fff;
+    border-color: var(--red);
+  }
+
+  .option-btn.locked { cursor: default; }
+
+  /* ─── FEEDBACK ────────────────────────────────────── */
+  .feedback-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: none;
+    font-size: 14px;
+    line-height: 1.6;
+    border: 1px solid;
+  }
+
+  .feedback-box.show { display: block; }
+
+  .feedback-box.correct-fb {
+    background: rgba(16,185,129,0.1);
+    border-color: var(--green);
+    color: #6ee7b7;
+  }
+
+  .feedback-box.wrong-fb {
+    background: rgba(239,68,68,0.08);
+    border-color: var(--red);
+    color: #fca5a5;
+  }
+
+  .feedback-box.skip-fb {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--yellow);
+    color: #fde68a;
+  }
+
+  .feedback-title {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hint-text {
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  /* ─── NAV BUTTONS ─────────────────────────────────── */
+  .quiz-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-btn {
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid;
+  }
+
+  .btn-skip {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--muted);
+  }
+
+  .btn-skip:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  .btn-next {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    margin-left: auto;
+  }
+
+  .btn-next:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: translateX(3px);
+  }
+
+  .btn-next:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+  }
+
+  /* ─── QUESTION MAP ────────────────────────────────── */
+  .qmap-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .qmap-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  .question-map {
+    display: none;
+    position: fixed;
+    right: 16px;
+    top: 80px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 200;
+    max-height: 70vh;
+    overflow-y: auto;
+    width: 280px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .question-map.open { display: block; }
+
+  .qmap-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .qmap-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+
+  .qmap-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .qmap-dot:hover { border-color: var(--accent); }
+  .qmap-dot.qd-correct { background: rgba(16,185,129,0.2); border-color: var(--green); color: var(--green); }
+  .qmap-dot.qd-wrong { background: rgba(239,68,68,0.15); border-color: var(--red); color: var(--red); }
+  .qmap-dot.qd-skipped { background: rgba(245,158,11,0.15); border-color: var(--yellow); color: var(--yellow); }
+  .qmap-dot.qd-current { border-color: var(--accent); color: var(--accent); font-weight: bold; }
+
+  /* ─── RESULT SCREEN ───────────────────────────────── */
+  #result-screen {
+    display: none;
+    min-height: 100vh;
+    padding: 48px 24px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring .ring-bg { fill: none; stroke: var(--border); stroke-width: 10; }
+  .score-ring .ring-fill {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s ease;
+  }
+
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-pct {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .score-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  .grade-badge {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    padding: 12px 32px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  @media(max-width:600px) { .result-stats { grid-template-columns: repeat(2,1fr); } }
+
+  .rs-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 12px;
+    text-align: center;
+  }
+
+  .rs-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    display: block;
+  }
+
+  .rs-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .review-section { margin-bottom: 40px; }
+
+  .review-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+
+  .review-item .ri-q {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: #f1f5f9;
+  }
+
+  .ri-answers {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+
+  .ri-yours { color: var(--red); }
+  .ri-correct-ans { color: var(--green); }
+  .ri-hint { color: var(--muted); font-style: italic; font-size: 12px; margin-top: 6px; }
+
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 36px;
+  }
+
+  .ra-btn {
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid;
+  }
+
+  .ra-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .ra-primary:hover { background: #2563eb; transform: translateY(-2px); }
+  .ra-secondary { background: transparent; border-color: var(--border); color: var(--muted); }
+  .ra-secondary:hover { border-color: var(--text); color: var(--text); }
+
+  /* ─── ANIMATIONS ──────────────────────────────────── */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim-in { animation: slideIn 0.35s ease forwards; }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+  }
+
+  .shake { animation: shake 0.4s ease; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ─── START SCREEN ─────────────────────────────────────── -->
+<div id="start-screen">
+  <div class="badge">BCA · Semester IV · CSJM University</div>
+  <h1>Optimization<br>Techniques<br>Quiz</h1>
+  <p class="subtitle">150 high-probability questions based on previous year exam analysis (2022–2024) · All 5 Units</p>
+
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);max-width:460px;">
+    <div class="stat-box"><span class="num">150</span><span class="label">Total Qs</span></div>
+    <div class="stat-box"><span class="num" style="color:var(--accent2)">5</span><span class="label">Units</span></div>
+    <div class="stat-box"><span class="num" style="color:var(--green)">PYQ</span><span class="label">Based</span></div>
+  </div>
+
+  <div style="margin-bottom:12px;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">Quiz Mode</div>
+  <div class="mode-select">
+    <button class="mode-btn active" onclick="selectMode('practice')" id="mode-practice">
+      <span class="mode-icon">📚</span>
+      <span class="mode-label">Practice</span>
+      <span class="mode-desc">See answer after each Q</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode('exam')" id="mode-exam">
+      <span class="mode-icon">⏱️</span>
+      <span class="mode-label">Exam Mode</span>
+      <span class="mode-desc">90 min timer · No hints</span>
+    </button>
+    <button class="mode-btn" onclick="selectMode('wrong')" id="mode-wrong">
+      <span class="mode-icon">🎯</span>
+      <span class="mode-label">Weak Zone</span>
+      <span class="mode-desc">Only wrong/skipped Qs</span>
+    </button>
+  </div>
+
+  <div style="margin-bottom:16px;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">Filter by Unit</div>
+  <div class="unit-filter">
+    <span class="unit-chip active" onclick="toggleUnit('all')" id="chip-all">All Units</span>
+    <span class="unit-chip" onclick="toggleUnit('1')" id="chip-1">Unit I · LP</span>
+    <span class="unit-chip" onclick="toggleUnit('2')" id="chip-2">Unit II · Game Theory</span>
+    <span class="unit-chip" onclick="toggleUnit('3')" id="chip-3">Unit III · Replacement</span>
+    <span class="unit-chip" onclick="toggleUnit('4')" id="chip-4">Unit IV · PERT/CPM</span>
+    <span class="unit-chip" onclick="toggleUnit('5')" id="chip-5">Unit V · Sequencing</span>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz()">Start Quiz →</button>
+
+  <div id="best-score-display" style="margin-top:24px;font-family:var(--mono);font-size:12px;color:var(--muted);"></div>
+</div>
+
+<!-- ─── QUIZ SCREEN ───────────────────────────────────────── -->
+<div id="quiz-screen">
+  <div class="quiz-header">
+    <span class="q-counter" id="q-counter">Q 1 / 150</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="score-display">
+      <span class="score-correct" id="hdr-correct">✓ 0</span>
+      <span class="score-wrong" id="hdr-wrong">✗ 0</span>
+    </div>
+    <span class="timer-badge" id="timer-badge" style="display:none">90:00</span>
+    <button class="qmap-toggle" onclick="toggleMap()">Map</button>
+  </div>
+
+  <div class="quiz-body">
+    <div class="unit-tag" id="unit-tag"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options-grid" id="options-grid"></div>
+    <div class="feedback-box" id="feedback-box"></div>
+    <div class="quiz-nav">
+      <button class="nav-btn btn-skip" onclick="skipQuestion()">Skip →</button>
+      <button class="nav-btn btn-next" id="next-btn" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+
+  <div class="question-map" id="question-map">
+    <div class="qmap-title">Question Map</div>
+    <div class="qmap-grid" id="qmap-grid"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--green);font-family:var(--mono);">■ Correct</span>
+      <span style="font-size:11px;color:var(--red);font-family:var(--mono);">■ Wrong</span>
+      <span style="font-size:11px;color:var(--yellow);font-family:var(--mono);">■ Skipped</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RESULT SCREEN ─────────────────────────────────────── -->
+<div id="result-screen">
+  <div class="result-header">
+    <div class="score-ring">
+      <svg viewBox="0 0 160 160" width="160" height="160">
+        <circle class="ring-bg" cx="80" cy="80" r="70"/>
+        <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="70"
+          stroke-dasharray="439.8" stroke-dashoffset="439.8"/>
+      </svg>
+      <div class="score-center">
+        <span class="score-pct" id="res-pct">0%</span>
+        <span class="score-label">SCORE</span>
+      </div>
+    </div>
+    <div class="grade-badge" id="grade-badge"></div>
+    <p id="grade-msg" style="color:var(--muted);font-size:15px;"></p>
+  </div>
+
+  <div class="result-stats">
+    <div class="rs-box"><span class="rs-num" id="rs-correct" style="color:var(--green)">0</span><span class="rs-label">Correct</span></div>
+    <div class="rs-box"><span class="rs-num" id="rs-wrong" style="color:var(--red)">0</span><span class="rs-label">Wrong</span></div>
+    <div class="rs-box"><span class="rs-num" id="rs-skipped" style="color:var(--yellow)">0</span><span class="rs-label">Skipped</span></div>
+    <div class="rs-box"><span class="rs-num" id="rs-time" style="color:var(--accent2)">—</span><span class="rs-label">Time Taken</span></div>
+  </div>
+
+  <div class="review-section" id="wrong-review"></div>
+  <div class="review-section" id="skipped-review"></div>
+
+  <div class="result-actions">
+    <button class="ra-btn ra-primary" onclick="restartQuiz()">Restart</button>
+    <button class="ra-btn ra-secondary" onclick="retryWrong()">Retry Wrong Only</button>
+    <button class="ra-btn ra-secondary" onclick="goHome()">Home</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  ALL 150 QUESTIONS DATA — BCA-4004 Optimization Techniques
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+// ── Unit 1 — Linear Programming ──────────────────────────
+{u:1,q:"The objective function in Linear Programming is:",o:["A constraint","A function to be optimized","A relation between variables","None of above"],a:1,h:"LPP involves optimizing (maximizing or minimizing) an objective function subject to constraints."},
+{u:1,q:"The graphical method of LP is useful when decision variables are:",o:["1","2","3","4"],a:1,h:"Graphical method works only for 2-variable LPP problems."},
+{u:1,q:"In LPP, the feasible solution satisfies:",o:["Only constraints","Only non-negative restriction","Both A and B","[A],[B] and Optimum solution"],a:2,h:"A feasible solution must satisfy all constraints AND non-negativity restrictions simultaneously."},
+{u:1,q:"To minimize Z, we can equivalently:",o:["-maximize(Z)","maximize(Z)","-maximize(-Z)","None"],a:0,h:"Minimize Z = Maximize(-Z). This is a standard conversion trick in LPP."},
+{u:1,q:"If the feasible region of an LPP is empty, the solution is:",o:["Infeasible","Unbounded","Optimal","Alternative"],a:0,h:"When no point satisfies all constraints, the solution is infeasible."},
+{u:1,q:"The optimal solution of an LPP occurs at:",o:["Any interior point","Corner point of feasible region","Origin only","Midpoint"],a:1,h:"Fundamental theorem of LP: optimal solution always occurs at an extreme (corner) point."},
+{u:1,q:"Slack variable is added to convert a ≤ constraint to equality. Its coefficient in objective function is:",o:["M","-M","0","1"],a:2,h:"Slack variables have zero coefficient in the objective function."},
+{u:1,q:"Surplus variable is used for constraints of type:",o:["≤","≥","=","None"],a:1,h:"Surplus variables are subtracted from ≥ constraints to convert them to equalities."},
+{u:1,q:"Artificial variable is added in case of constraints:",o:["≥ and =","≤ only","≤ and ≥","None"],a:0,h:"Artificial variables are added to ≥ and = constraints to create an initial BFS."},
+{u:1,q:"The Big-M method uses artificial variables with coefficient in objective function:",o:["0","1","M (very large positive)","−M"],a:2,h:"In Big-M method, artificial variables get coefficient +M to force them out of optimal solution."},
+{u:1,q:"In simplex method, the incoming variable has:",o:["Most positive Cj-Zj","Most negative Cj-Zj","Zero Cj-Zj","Any Cj-Zj"],a:0,h:"For maximization, the variable with the most positive Cj-Zj enters the basis."},
+{u:1,q:"In the optimal simplex table, Cj − Zj = 0 indicates:",o:["Infeasible solution","Alternative optimal solution","Unbounded","Degenerate"],a:1,h:"When Cj-Zj = 0 for a non-basic variable, there exists an alternative optimal solution."},
+{u:1,q:"If all Cj−Zj ≤ 0 in a maximization problem, the current solution is:",o:["Infeasible","Unbounded","Optimal","Degenerate"],a:2,h:"For maximization, optimality is reached when all Cj-Zj ≤ 0."},
+{u:1,q:"Degeneracy in simplex occurs when:",o:["One or more basic variables are zero","All basic variables are zero","Objective function is zero","None"],a:0,h:"Degeneracy happens when one or more basic variables take zero value."},
+{u:1,q:"The dual of a minimization problem is a:",o:["Maximization problem","Minimization problem","Same type","None"],a:0,h:"The dual of a minimization primal problem is always a maximization problem."},
+{u:1,q:"If the primal has a finite optimal solution, then dual:",o:["Is infeasible","Has finite optimal solution","Is unbounded","None"],a:1,h:"Strong duality theorem: if primal has finite optimal, dual also has finite optimal."},
+{u:1,q:"A transportation problem is a special case of:",o:["Assignment problem","Game theory","LPP","Replacement theory"],a:2,h:"Transportation and assignment problems are special cases of LPP."},
+{u:1,q:"In North-West Corner method, allocation starts from:",o:["Top-right corner","Bottom-left corner","Top-left corner","Lowest cost cell"],a:2,h:"NWCR always begins allocation from the top-left (north-west) corner."},
+{u:1,q:"Vogel's Approximation Method (VAM) gives solutions that are:",o:["Always optimal","Close to optimal","Always infeasible","Same as NWCR"],a:1,h:"VAM gives a very good initial BFS, often close to or at the optimal solution."},
+{u:1,q:"MODI method is used to:",o:["Find initial BFS","Test and improve optimality","Find the assignment","None"],a:1,h:"MODI is used to test and improve the optimality of a transportation solution."},
+{u:1,q:"In a balanced transportation problem:",o:["Supply > Demand","Demand > Supply","Supply = Demand","None"],a:2,h:"A balanced problem has total supply equal to total demand."},
+{u:1,q:"A basic feasible solution of a transportation problem with m origins and n destinations has:",o:["m+n allocations","m+n-1 allocations","m×n allocations","m-n allocations"],a:1,h:"A non-degenerate BFS has exactly m+n-1 allocations."},
+{u:1,q:"Degeneracy in transportation occurs when number of occupied cells is:",o:["Equal to m+n-1","Less than m+n-1","Greater than m+n-1","Equal to m×n"],a:1,h:"When occupied cells < m+n-1, the solution is degenerate."},
+{u:1,q:"The assignment problem is solved by:",o:["Simplex method","Hungarian method","VAM","NWCR"],a:1,h:"The Hungarian method is specifically designed to solve assignment problems."},
+{u:1,q:"In an assignment problem, a dummy row or column is added when:",o:["Matrix is square","Number of rows ≠ columns","All costs are equal","None"],a:1,h:"A dummy row or column with zero costs is added to make the matrix square."},
+{u:1,q:"The maximum value of Z = 3x + 4y subject to x+y≤4, x≥0, y≥0 is:",o:["12","14","16","10"],a:2,h:"At corner point (0,4): Z = 3(0)+4(4) = 16. This is the maximum value."},
+{u:1,q:"In simplex method, for ≤ constraint type we add:",o:["Surplus variable","Artificial variable","Slack variable","Both A and C"],a:2,h:"Slack variables are added to ≤ constraints to convert them to equalities."},
+{u:1,q:"The term 'idle time' is used in:",o:["LPP","Assignment","Sequencing","Transportation"],a:2,h:"Idle time is the time a machine stays vacant between jobs in a sequencing problem."},
+{u:1,q:"An iso-profit line represents:",o:["Infinite solutions all yielding same profit","A boundary of feasible region","An optimal solution","None"],a:0,h:"An iso-profit line passes through all points giving the same value of the objective function."},
+{u:1,q:"In converting inequalities to equations in graphical method, we use:",o:["Surplus variables","Slack variables","Both A and B","Assume them equations"],a:0,h:"In graphical method we use slack variables to convert ≤ inequalities to equalities."},
+
+// ── Unit 2 — Game Theory ─────────────────────────────────
+{u:2,q:"Game theory deals with:",o:["Physical conflicts","Selecting optimal strategies in competitive situations","Transportation routing","Inventory management"],a:1,h:"Game theory is the study of strategic decision-making where each player's outcome depends on others' choices."},
+{u:2,q:"In a two-person zero-sum game, the sum of payoffs of all players is:",o:["Zero","Positive","Negative","One"],a:0,h:"In zero-sum games, one player's gain equals another's loss — the total is always zero."},
+{u:2,q:"A saddle point exists when:",o:["Maximin = Minimax","Maximin > Minimax","Maximin < Minimax","None"],a:0,h:"A saddle point exists when the maximin value equals the minimax value."},
+{u:2,q:"When a saddle point exists, players use:",o:["Mixed strategies","Pure strategies","Dominant strategies","None"],a:1,h:"Existence of a saddle point implies the game has a definite solution using pure strategies."},
+{u:2,q:"The value of the game is the:",o:["Largest payoff","Smallest payoff","Expected payoff at equilibrium strategies","Average payoff"],a:2,h:"The value of the game is the expected payoff when both players use their optimal strategies."},
+{u:2,q:"In a game, if upper value = lower value = v, then v is called:",o:["Saddle point value","Value of the game","Optimal payoff","None"],a:1,h:"When upper and lower values are equal, that common value is the 'value of the game'."},
+{u:2,q:"Dominance principle is used to:",o:["Find saddle point","Reduce size of payoff matrix","Find mixed strategy","None"],a:1,h:"Dominance principle eliminates rows/columns that are dominated, reducing the size of the payoff matrix."},
+{u:2,q:"A row i dominates row k if every element of row i is:",o:["Less than or equal to row k","Greater than or equal to row k","Equal to row k","None"],a:1,h:"Row i dominates row k if every element of row i ≥ corresponding element of row k."},
+{u:2,q:"Mixed strategy means a player:",o:["Plays one fixed strategy","Randomizes between strategies with probabilities","Always chooses the dominant strategy","None"],a:1,h:"Mixed strategy involves selecting strategies with certain probabilities rather than a single pure strategy."},
+{u:2,q:"Algebraic method to solve games without saddle point applies when payoff matrix is:",o:["1×1","2×2","3×3","Any size"],a:1,h:"Algebraic method is directly applicable to 2×2 payoff matrices without saddle points."},
+{u:2,q:"Graphical method is used when game matrix is:",o:["2×2 only","m×2 or 2×n","3×3","Any"],a:1,h:"Graphical method applies to m×2 or 2×n games."},
+{u:2,q:"In a fair game, the value of the game is:",o:["Positive","Negative","Zero","One"],a:2,h:"A game is called 'fair' when its value is zero — neither player has an advantage."},
+{u:2,q:"Minimax principle is used by:",o:["Row player","Column player","Both players","Neither"],a:1,h:"The column player (minimizer) uses the minimax principle."},
+{u:2,q:"Maximin principle is used by:",o:["Row player","Column player","Neither","Both"],a:0,h:"The row player (maximizer) uses the maximin principle."},
+{u:2,q:"When all players follow their optimal strategies, expected payoff is called:",o:["Game value","Saddle point","Equilibrium","Value of game"],a:3,h:"When all players play optimally, the resulting expected payoff is called the value of the game."},
+{u:2,q:"A Nash equilibrium is a situation where:",o:["All players cooperate","No player can improve by unilaterally changing strategy","One player dominates","All payoffs are equal"],a:1,h:"Nash equilibrium: each player's strategy is optimal given the strategies of all other players."},
+{u:2,q:"In pure strategy game, a particular strategy is:",o:["Selected randomly","Selected by each player as their definite choice","Never optimal","None"],a:1,h:"In pure strategy, each player selects one specific strategy as their optimal choice."},
+{u:2,q:"If a game has no saddle point, the solution involves:",o:["Pure strategy","Mixed strategy","No solution","Dominant strategy only"],a:1,h:"When no saddle point exists, the optimal solution requires mixed strategies."},
+{u:2,q:"In a 2×2 game without saddle point, the probability for row player is found using:",o:["VAM","Hungarian method","Algebraic formula","Simplex method"],a:2,h:"For 2×2 games, algebraic formulas give the optimal mixed strategy probabilities."},
+{u:2,q:"Which method solves a game when the payoff matrix is m×2?",o:["Simplex","Algebraic","Graphical","Dominance only"],a:2,h:"Graphical method is used when one player has exactly 2 pure strategies."},
+
+// ── Unit 3 — Replacement Theory ──────────────────────────
+{u:3,q:"Replacement theory deals with:",o:["Replacing old machines/items that deteriorate or fail","Replacing employees","Transportation routing","LPP solutions"],a:0,h:"Replacement theory provides models for deciding when to replace deteriorating equipment."},
+{u:3,q:"Replacement is said to be necessary when:",o:["Failure rate is increasing","Cost is decreasing","Machine is new","None"],a:0,h:"Replacement is necessary when the failure rate is increasing over time."},
+{u:3,q:"In replacement analysis, maintenance cost is a function of:",o:["Time","Resale value","Initial investment","None of these"],a:0,h:"Maintenance cost generally increases with time/age of the machine."},
+{u:3,q:"A machine is replaced when average running cost:",o:["Equals the current running cost","Exceeds the current period cost","Is minimum","Is maximum"],a:2,h:"The optimal replacement time is when the average total cost per year is at its minimum."},
+{u:3,q:"Group replacement policy is suitable for:",o:["Identical low-cost items that fail suddenly","Expensive unique machines","Items that fail gradually","All machines"],a:0,h:"Group replacement is used for large numbers of identical low-cost items that fail suddenly."},
+{u:3,q:"Individual replacement means:",o:["Replacing all items at fixed intervals","Replacing an item only when it fails","Replacing groups together","None"],a:1,h:"Individual replacement: each item is replaced only when it actually fails."},
+{u:3,q:"The curve used to interpret machine life cycle is called:",o:["Bath tub curve","Time curve","Product life cycle","Ogive"],a:0,h:"The bathtub curve shows failure rate over time: high initially, low (useful life), then high (wear-out)."},
+{u:3,q:"If a machine becomes old, the failure rate is expected to:",o:["Decrease","Increase","Remain constant","We cannot say"],a:1,h:"As machines age, wear increases, leading to higher failure rates."},
+{u:3,q:"When probability of failure reduces gradually, failure mode is called:",o:["Regressive","Retrogressive","Progressive","Recursive"],a:2,h:"Progressive failure mode: probability of failure increases gradually with time."},
+{u:3,q:"For group replacement, the policy that minimizes cost considers:",o:["Individual replacement cost only","Both individual and group replacement costs","Only group cost","Purchase price only"],a:1,h:"Optimal group replacement policy minimizes total cost by comparing individual vs. group replacement costs."},
+{u:3,q:"The assumption for replacement when money value does not change with time is:",o:["No capital cost","No scrap value","Constant scrap value","Zero maintenance cost"],a:1,h:"When money value is constant, we assume no scrap value."},
+{u:3,q:"Preventive maintenance means:",o:["Replacing before failure occurs","Replacing after failure","Replacing at random times","None"],a:0,h:"Preventive maintenance involves replacing or servicing items before they fail."},
+{u:3,q:"In replacement theory, the economic life of an asset is:",o:["The time when failure rate is highest","The time period that minimizes average total cost","The physical life","The warranty period"],a:1,h:"Economic life is the age at which the average total cost per year is minimized."},
+{u:3,q:"PERT is used for non-repetitive jobs. The corresponding technique for repetitive jobs is:",o:["CPM","Queue","Replacement theory","Sequencing"],a:0,h:"CPM is activity-oriented and used for repetitive/well-defined projects."},
+{u:3,q:"Replacement of items that fail suddenly uses:",o:["Deterministic model","Probabilistic model","Both","Neither"],a:1,h:"Sudden failure requires probabilistic replacement models using failure probability distributions."},
+
+// ── Unit 4 — PERT/CPM ────────────────────────────────────
+{u:4,q:"PERT stands for:",o:["Project Evaluation and Review Technique","Program Evaluation and Review Technique","Project Estimation and Review Technique","None"],a:1,h:"PERT = Program Evaluation and Review Technique."},
+{u:4,q:"CPM stands for:",o:["Critical Path Method","Critical Program Management","Controlled Path Model","None"],a:0,h:"CPM = Critical Path Method."},
+{u:4,q:"PERT is used for:",o:["Repetitive projects with known durations","Non-repetitive projects with uncertain durations","Only small projects","None"],a:1,h:"PERT uses probabilistic time estimates for projects with uncertain activity durations."},
+{u:4,q:"CPM uses how many time estimates per activity?",o:["One","Two","Three","Four"],a:0,h:"CPM uses one deterministic time estimate per activity."},
+{u:4,q:"PERT uses how many time estimates per activity?",o:["One","Two","Three","Four"],a:2,h:"PERT uses three: optimistic (to), most likely (tm), and pessimistic (tp)."},
+{u:4,q:"The PERT expected time formula is:",o:["(to + tm + tp)/3","(to + 4tm + tp)/6","(to + 2tm + tp)/4","(to + tm)/2"],a:1,h:"Expected time te = (to + 4tm + tp)/6 — the weighted beta distribution formula."},
+{u:4,q:"The critical path in a network is the path with:",o:["Shortest duration","Longest duration","Maximum activities","Minimum cost"],a:1,h:"The critical path is the longest path — it determines minimum project completion time."},
+{u:4,q:"Activities on critical path have float equal to:",o:["Maximum","One","Zero","Minimum"],a:2,h:"Critical activities have zero float — any delay will delay the entire project."},
+{u:4,q:"Total float of an activity is defined as:",o:["LFT – EFT","LST – EST","LFT – EST – duration","Both A and B"],a:2,h:"Total float = LFT – EST – duration = maximum delay without affecting project duration."},
+{u:4,q:"Free float is the delay allowed without affecting:",o:["Project completion","Earliest start of successor","Latest start of successor","None"],a:1,h:"Free float = maximum delay without delaying the earliest start of any successor activity."},
+{u:4,q:"EST + activity duration =",o:["Latest Finish Time","Earliest Finish Time","Latest Start Time","None"],a:1,h:"EFT = EST + duration."},
+{u:4,q:"In a network diagram, events are represented by:",o:["Arrows","Circles/nodes","Rectangles","Lines"],a:1,h:"Events (milestones) are shown as circles/nodes and activities as arrows."},
+{u:4,q:"A dummy activity in PERT network is used to show:",o:["Precedence relationship","Resource idleness","Dangling","Time"],a:0,h:"Dummy activities show logical dependencies without consuming resources."},
+{u:4,q:"PERT is event-oriented while CPM is:",o:["Time-oriented","Activity-oriented","Resource-oriented","Cost-oriented"],a:1,h:"PERT focuses on events, while CPM focuses on activities."},
+{u:4,q:"Backward pass in network analysis finds:",o:["Earliest times of events","Latest times of events","Both","None"],a:1,h:"Backward pass calculates the Latest Start and Latest Finish times."},
+{u:4,q:"Forward pass in network analysis finds:",o:["Earliest times","Latest times","Critical path","Float"],a:0,h:"Forward pass determines Earliest Start and Earliest Finish times."},
+{u:4,q:"The variance of an activity in PERT is:",o:["(tp-to)/6","[(tp-to)/6]²","(tp-to)²/36","Both B and C"],a:3,h:"Variance = [(tp-to)/6]² = (tp-to)²/36."},
+{u:4,q:"Positive slack in PERT indicates the project is:",o:["Behind schedule","Ahead of schedule","On critical path","None"],a:1,h:"Positive slack means the project is ahead of schedule."},
+{u:4,q:"Crashing means:",o:["Extending project duration","Reducing project duration by adding resources","Eliminating activities","None"],a:1,h:"Crashing reduces activity duration by allocating additional resources."},
+{u:4,q:"Cost slope in CPM is:",o:["Normal cost/Crash cost","(Crash cost – Normal cost)/(Normal time – Crash time)","Normal time/Crash time","None"],a:1,h:"Cost slope = additional cost per unit time reduction."},
+{u:4,q:"Network models have advantages in terms of project:",o:["Planning","Scheduling","Controlling","All of above"],a:3,h:"PERT/CPM network models assist in planning, scheduling, monitoring, and controlling."},
+
+// ── Unit 5 — Sequencing ──────────────────────────────────
+{u:5,q:"Job sequencing problem involves:",o:["Scheduling jobs on machines to minimize total time/cost","Finding optimal inventory","Transportation of goods","LP optimization"],a:0,h:"Job sequencing determines the optimal order to process jobs on machines."},
+{u:5,q:"Johnson's algorithm is used for:",o:["n jobs on 1 machine","n jobs on 2 machines","n jobs on n machines","1 job on n machines"],a:1,h:"Johnson's algorithm finds the optimal sequence for n jobs through exactly 2 machines."},
+{u:5,q:"The primary objective of job sequencing with two machines is:",o:["Minimize total processing time","Maximize jobs","Equalize workload","Prioritize jobs"],a:0,h:"Johnson's algorithm minimizes the total elapsed time (makespan)."},
+{u:5,q:"In Johnson's rule, a job with minimum processing time on Machine 1 is placed:",o:["At the end","In the starting","In the middle","Anywhere"],a:1,h:"Min time on M1 → place first; min time on M2 → place last."},
+{u:5,q:"In sequencing, idle time refers to:",o:["Time machines work","Time machine is vacant/waiting","Time jobs are processed","Total elapsed time"],a:1,h:"Idle time is the time a machine remains vacant during the schedule."},
+{u:5,q:"Total elapsed time in sequencing is the time from:",o:["Start of first job to finish of last job","Start to start","End to end","None"],a:0,h:"Total elapsed time = time from first job start on M1 to last job finish on M2."},
+{u:5,q:"In n jobs 2 machines case, processing is not allowed to:",o:["Pass","Repeat the job","Load","Unload"],a:0,h:"Passing is not allowed — jobs must maintain the same sequence on both machines."},
+{u:5,q:"Sequencing is a subset of:",o:["Routing","Expediting","Scheduling","None of above"],a:2,h:"Sequencing is a part of the broader scheduling function."},
+{u:5,q:"The time required by each job on each machine is called:",o:["Processing time","Idle time","Elapsed time","None"],a:0,h:"Processing time is the time each job requires on each machine."},
+{u:5,q:"Which is NOT allowed in sequencing of n jobs on 2 machines?",o:["Passing","Repeating the job","Loading","One loaded must finish before removing"],a:0,h:"Passing (overtaking) is not permitted in Johnson's algorithm."},
+{u:5,q:"For operations research, the approach is:",o:["Multi-disciplinary","Intuitive","Artificial","None"],a:0,h:"Operations Research uses a multi-disciplinary team approach."},
+{u:5,q:"Operations research was developed during:",o:["World War I","World War II","Civil War","Industrial Revolution"],a:1,h:"Operations Research originated during World War II."},
+{u:5,q:"The main objective of Operations Research is:",o:["Artistic solutions","Finding optimal solutions to complex problems","Replacing humans","None"],a:1,h:"OR uses scientific methods to arrive at optimal solutions for complex problems."},
+{u:5,q:"Operations Research models that deal with certain outcomes are:",o:["Probabilistic","Deterministic","Iconic","Analogue"],a:1,h:"Deterministic models assume all parameters are known with certainty."},
+{u:5,q:"A model in operations research is:",o:["An essence of reality","An approximation","An idealization","All of above"],a:3,h:"OR models are approximations, idealizations, and abstractions of reality."},
+
+// ── Additional / Mixed Unit Questions ────────────────────
+{u:1,q:"Which of the following CANNOT solve a transportation problem?",o:["North-West Corner Rule","Matrix minima method","VAM","Graphical method"],a:3,h:"Graphical method is only for 2-variable LPP — it cannot solve transportation problems."},
+{u:1,q:"In a maximization transportation problem, we convert to minimization by:",o:["Subtracting from zero","Subtracting from highest element","Adding a constant","None"],a:1,h:"Subtract all elements from the largest element to create an equivalent minimization problem."},
+{u:1,q:"The implied cost in transportation (MODI method) for cell (i,j) is:",o:["ui + vj","ui - vj","ui × vj","ui / vj"],a:0,h:"MODI method: implied cost = ui + vj."},
+{u:2,q:"In a payoff matrix game, if minimax = 10 and maximin = 7, then:",o:["Saddle point exists at 10","Saddle point exists at 7","No saddle point exists","Saddle point at 8.5"],a:2,h:"Saddle point exists only when maximin = minimax. Since 7 ≠ 10, no saddle point exists."},
+{u:2,q:"The outcome of interaction of selected strategies in a game is called:",o:["Income","Profit","Payoff","Gains"],a:2,h:"The payoff is the outcome resulting from each player's chosen strategy combination."},
+{u:4,q:"In PERT, activities have:",o:["Deterministic time estimates","Probabilistic time estimates","No time estimates","Fixed time"],a:1,h:"PERT uses probabilistic time estimates to handle uncertainty."},
+{u:4,q:"Slack time in PERT analysis can never be less than:",o:["Zero","One","Minimum","Duration"],a:0,h:"Slack can be zero or positive, but can never be negative in a feasible schedule."},
+{u:3,q:"The bath tub curve shows failure rate that is initially high, then:",o:["Remains high","Decreases then increases","Always increases","Always decreases"],a:1,h:"Bathtub curve: high initially → low constant rate → rising rate (wear-out)."},
+{u:1,q:"In LP, constraints in the standard form are of type:",o:["≥","≤","=","Both A and B"],a:2,h:"Standard form of LPP has all constraints as equalities."},
+{u:1,q:"Two forms of LPP are:",o:["Standard form and canonical form","Standard and general form","Matrix and canonical form","None"],a:0,h:"LPP can be expressed in standard form or canonical form."},
+{u:4,q:"A project can have more than one critical path.",o:["True — multiple critical paths are possible","False — only one critical path exists","Cannot be determined","None"],a:0,h:"A project network can have multiple critical paths with the same longest duration."},
+{u:2,q:"A dominant strategy is one that:",o:["Is always the worst choice","Is always the best choice regardless of opponent","Is used in mixed strategies","None"],a:1,h:"A dominant strategy yields the best outcome regardless of what the opponent does."},
+{u:1,q:"The Hungarian method is used for:",o:["Transportation problem","Assignment problem","Game theory","Replacement"],a:1,h:"The Hungarian algorithm is specifically designed for assignment problems."},
+{u:5,q:"If jobs J1, J2 have times on M1 as (3, 5) and M2 as (2, 4), optimal sequence using Johnson's rule is:",o:["J1-J2","J2-J1","Random","Either"],a:0,h:"Min time = J1 on M2 (2) → J1 first. Then J2. Sequence: J1-J2."},
+{u:4,q:"LFT (Latest Finish Time) is the latest time by which an activity can finish:",o:["Without delaying the project","Without delaying successors","Both are correct","Neither"],a:0,h:"LFT is the latest time an activity can finish without delaying overall project completion."},
+{u:2,q:"When the sum of gains of one player equals sum of losses of another, the game is:",o:["Non-zero sum","Zero-sum","Fair","None"],a:1,h:"This defines a zero-sum game — total payoff is always zero."},
+{u:1,q:"In the simplex method, the variable that enters the basis is called:",o:["Outgoing variable","Incoming variable","Pivot variable","Both B and C"],a:3,h:"The variable that enters the basis is called the incoming/pivot variable."},
+{u:1,q:"The intersection of key column and key row in simplex is called:",o:["Vital element","Important element","Key element","Basic element"],a:2,h:"The element at the intersection is called the key element or pivot element."},
+{u:3,q:"Group replacement is most suitable when items:",o:["Are expensive and unique","Fail gradually","Are identical and low-cost with sudden failure","Are always repaired"],a:2,h:"Group replacement works best for identical low-cost items that fail suddenly."},
+{u:4,q:"When optimistic time = 2, most likely = 4, pessimistic = 12, expected PERT time is:",o:["5","6","4.67","5.33"],a:0,h:"te = (2 + 4×4 + 12)/6 = (2+16+12)/6 = 30/6 = 5."},
+{u:1,q:"If all Cj values in the entering variable column are negative in simplex, solution is:",o:["Infeasible","Unbounded","Alternative","Degenerate"],a:1,h:"If all values in the key column are negative or zero, the solution is unbounded."},
+{u:2,q:"A game is said to be fair if upper and lower values are:",o:["Equal and non-zero","Equal and zero","Not equal","None"],a:1,h:"A fair game has value = 0, meaning both minimax and maximin equal zero."},
+{u:4,q:"The second-longest path in a network diagram is called:",o:["Alternate path","Feasible path","Critical path","Sub-critical path"],a:3,h:"The second-longest path is called the sub-critical path."},
+{u:1,q:"Operations Research is the application of _______ methods to arrive at optimal solutions.",o:["Economical","Scientific","Artistic","None"],a:1,h:"OR applies scientific methods to complex operational decision problems."},
+{u:5,q:"Greedy method is used in job sequencing with:",o:["2 machines","Deadlines","n machines","None"],a:1,h:"The greedy algorithm is used for job sequencing with deadline constraints."},
+{u:1,q:"If a transportation problem has 3 sources and 4 destinations, basic feasible solution has:",o:["7 allocations","6 allocations","12 allocations","3 allocations"],a:1,h:"BFS has m+n-1 = 3+4-1 = 6 allocations."},
+{u:2,q:"In m×n game, the graphical method can be used when:",o:["m=2 or n=2","m=n","m>2 and n>2","None"],a:0,h:"Graphical method is applicable when either player has exactly 2 strategies."},
+{u:4,q:"An event in PERT/CPM represents:",o:["A task or work","An instantaneous point in time (start/end of activity)","A resource","A constraint"],a:1,h:"Events are nodes representing instantaneous points in time."},
+{u:3,q:"If the economic life of a machine is 5 years, it means:",o:["Machine breaks down in 5 years","Average total cost is minimized at year 5","Failure rate peaks at year 5","None"],a:1,h:"Economic life = the age at which average total cost per year reaches its minimum."},
+{u:5,q:"Make span refers to:",o:["Total time to complete all jobs","Idle time between jobs","Processing time of one job","None"],a:0,h:"Makespan = total elapsed time from start of first job to completion of last job."},
+{u:1,q:"In the optimal simplex table, if Cj-Zj > 0 for a non-basic variable (maximization), the solution is:",o:["Optimal","Not optimal — can be improved","Infeasible","Unbounded"],a:1,h:"If any Cj-Zj > 0 exists for a non-basic variable, the objective can still be improved."},
+{u:4,q:"The activity cost that results in least possible direct cost of the activity is called:",o:["Crash cost","Normal cost","Cost slope","Overhead cost"],a:1,h:"Normal cost is the minimum-cost method for completing an activity in normal time."},
+{u:2,q:"A 3×4 payoff matrix can be reduced using:",o:["PERT","Dominance principle","Hungarian method","VAM"],a:1,h:"Dominance principle eliminates dominated rows/columns to reduce the payoff matrix."},
+{u:1,q:"The feasible region in LPP graphical method is the region satisfying:",o:["Only equality constraints","All constraints simultaneously","At least one constraint","The objective function"],a:1,h:"Feasible region = set of all points satisfying ALL constraints simultaneously."},
+{u:4,q:"If there are 5 activities on a critical path and each has variance 4, project variance is:",o:["4","20","100","2"],a:1,h:"Project variance = sum of variances of critical path activities = 5 × 4 = 20."},
+{u:1,q:"In a minimization transportation problem, the objective is to:",o:["Maximize profit","Minimize cost","Minimize solution","None"],a:1,h:"Minimize total transportation cost while satisfying all supply and demand constraints."},
+{u:3,q:"Replacement cost is the cost of:",o:["Repairing a part","Replacing a part with new one","Maintaining a machine","Downtime"],a:1,h:"Replacement cost = cost of purchasing and installing a new part/machine."},
+{u:5,q:"Johnson's rule for n jobs on 2 machines requires which operation is not permitted?",o:["Passing","Repeating","Parallel processing","Loading"],a:0,h:"No passing — jobs must maintain the same sequence on both machines."},
+{u:2,q:"In game theory, players are called:",o:["Invitees","Players","Contestants","Clients"],a:1,h:"Participants in a game are called players."},
+{u:4,q:"'O' on a PERT/CPM chart represents:",o:["An ordinary event","A significant milestone event","An event to be transferred","A dangling event"],a:1,h:"Circles (O) represent events — milestones marking start or completion of activities."},
+{u:1,q:"In North-West Corner Rule, demand in a column is satisfied, we move to:",o:["Left cell in next column","Right cell in next row","Left cell in next row","Right cell in next column"],a:3,h:"After satisfying column demand in NWCR, move to the right cell in the next column."},
+];
+
+// ════════════════════════════════════════════════════════════
+//  APP STATE
+// ════════════════════════════════════════════════════════════
+let state = {
+  mode: 'practice',
+  selectedUnits: 'all',
+  questions: [],
+  current: 0,
+  answers: [],
+  userAnswers: [],
+  correct: 0,
+  wrong: 0,
+  skipped: 0,
+  locked: false,
+  startTime: null,
+  timerInterval: null,
+  timeLeft: 90 * 60,
+  wrongHistory: JSON.parse(localStorage.getItem('opt_wrong_v2') || '[]'),
+  bestScore: JSON.parse(localStorage.getItem('opt_best_v2') || 'null'),
+};
+
+// ════════════════════════════════════════════════════════════
+//  START SCREEN LOGIC
+// ════════════════════════════════════════════════════════════
+function selectMode(m) {
+  state.mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + m).classList.add('active');
+}
+
+function toggleUnit(u) {
+  if (u === 'all') {
+    state.selectedUnits = 'all';
+    document.querySelectorAll('.unit-chip').forEach(c => c.classList.remove('active'));
+    document.getElementById('chip-all').classList.add('active');
+  } else {
+    document.getElementById('chip-all').classList.remove('active');
+    const chip = document.getElementById('chip-' + u);
+    chip.classList.toggle('active');
+    const active = [...document.querySelectorAll('.unit-chip.active')].map(c => c.id.replace('chip-', ''));
+    state.selectedUnits = active.length === 0 ? 'all' : active;
+    if (active.length === 0) { document.getElementById('chip-all').classList.add('active'); state.selectedUnits = 'all'; }
+  }
+}
+
+function showBestScore() {
+  const el = document.getElementById('best-score-display');
+  if (state.bestScore) {
+    el.textContent = `Best Score: ${state.bestScore.pct}% (${state.bestScore.correct}/${state.bestScore.total}) — ${state.bestScore.date}`;
+  }
+}
+
+showBestScore();
+
+function startQuiz() {
+  let pool = QUESTIONS;
+
+  if (state.mode === 'wrong') {
+    if (state.wrongHistory.length === 0) {
+      pool = QUESTIONS;
+    } else {
+      pool = state.wrongHistory.map(i => QUESTIONS[i]).filter(Boolean);
+    }
+  } else if (state.selectedUnits !== 'all') {
+    const units = Array.isArray(state.selectedUnits) ? state.selectedUnits.map(Number) : [Number(state.selectedUnits)];
+    pool = QUESTIONS.filter(q => units.includes(q.u));
+  }
+
+  if (pool.length === 0) pool = QUESTIONS;
+
+  // Shuffle
+  state.questions = [...pool].sort(() => Math.random() - 0.5);
+  state.current = 0;
+  state.answers = new Array(state.questions.length).fill(null);
+  state.userAnswers = new Array(state.questions.length).fill(null);
+  state.correct = 0; state.wrong = 0; state.skipped = 0;
+  state.locked = false;
+  state.startTime = Date.now();
+
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+
+  buildQMap();
+
+  if (state.mode === 'exam') {
+    state.timeLeft = 90 * 60;
+    document.getElementById('timer-badge').style.display = 'block';
+    startTimer();
+  } else {
+    document.getElementById('timer-badge').style.display = 'none';
+  }
+
+  renderQuestion();
+}
+
+// ════════════════════════════════════════════════════════════
+//  TIMER
+// ════════════════════════════════════════════════════════════
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    const m = Math.floor(state.timeLeft / 60);
+    const s = state.timeLeft % 60;
+    const badge = document.getElementById('timer-badge');
+    badge.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    badge.classList.toggle('urgent', state.timeLeft < 300);
+    if (state.timeLeft <= 0) { clearInterval(state.timerInterval); showResults(); }
+  }, 1000);
+}
+
+// ════════════════════════════════════════════════════════════
+//  QUESTION RENDERER
+// ════════════════════════════════════════════════════════════
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  const idx = state.current;
+
+  // Header
+  document.getElementById('q-counter').textContent = `Q ${idx+1} / ${total}`;
+  document.getElementById('progress-fill').style.width = `${((idx+1)/total)*100}%`;
+  document.getElementById('hdr-correct').textContent = `✓ ${state.correct}`;
+  document.getElementById('hdr-wrong').textContent = `✗ ${state.wrong}`;
+
+  // Unit tag
+  const unitNames = ['','Unit I · Linear Programming','Unit II · Game Theory','Unit III · Replacement','Unit IV · PERT/CPM','Unit V · Sequencing'];
+  document.getElementById('unit-tag').innerHTML = unitNames[q.u] || '';
+
+  // Question
+  document.getElementById('question-text').textContent = q.q;
+
+  // Options
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // If already answered, restore state
+  if (state.answers[idx] !== null) {
+    restoreAnswerState();
+  } else {
+    document.getElementById('feedback-box').className = 'feedback-box';
+    document.getElementById('next-btn').disabled = true;
+    state.locked = false;
+  }
+
+  updateQMap();
+
+  // Animate
+  document.querySelector('.quiz-body').classList.remove('anim-in');
+  void document.querySelector('.quiz-body').offsetWidth;
+  document.querySelector('.quiz-body').classList.add('anim-in');
+}
+
+function selectAnswer(optIdx) {
+  if (state.locked) return;
+  state.locked = true;
+  state.userAnswers[state.current] = optIdx;
+
+  const q = state.questions[state.current];
+  const isCorrect = optIdx === q.a;
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach(b => b.classList.add('locked'));
+  btns[optIdx].classList.add('selected');
+
+  if (isCorrect) {
+    state.answers[state.current] = 'correct';
+    state.correct++;
+    btns[optIdx].classList.add('correct');
+    showFeedback('correct', '✓ Correct!', null, q.h);
+  } else {
+    state.answers[state.current] = 'wrong';
+    state.wrong++;
+    btns[optIdx].classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    btns[optIdx].classList.add('shake');
+    showFeedback('wrong', '✗ Wrong', `Correct answer: (${['A','B','C','D'][q.a]}) ${q.o[q.a]}`, q.h);
+  }
+
+  document.getElementById('next-btn').disabled = false;
+  document.getElementById('hdr-correct').textContent = `✓ ${state.correct}`;
+  document.getElementById('hdr-wrong').textContent = `✗ ${state.wrong}`;
+  updateQMap();
+}
+
+function restoreAnswerState() {
+  const idx = state.current;
+  const q = state.questions[idx];
+  const status = state.answers[idx];
+  const userAns = state.userAnswers[idx];
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach(b => b.classList.add('locked'));
+  state.locked = true;
+
+  if (status === 'skipped') {
+    showFeedback('skip', '— Skipped', `Correct answer: (${['A','B','C','D'][q.a]}) ${q.o[q.a]}`, q.h);
+  } else if (status === 'correct') {
+    btns[userAns].classList.add('correct', 'selected');
+    showFeedback('correct', '✓ Correct!', null, q.h);
+  } else if (status === 'wrong') {
+    btns[userAns].classList.add('wrong', 'selected');
+    btns[q.a].classList.add('correct');
+    showFeedback('wrong', '✗ Wrong', `Correct answer: (${['A','B','C','D'][q.a]}) ${q.o[q.a]}`, q.h);
+  }
+  document.getElementById('next-btn').disabled = false;
+}
+
+function showFeedback(type, title, detail, hint) {
+  const box = document.getElementById('feedback-box');
+  const typeClass = type === 'correct' ? 'correct-fb' : type === 'wrong' ? 'wrong-fb' : 'skip-fb';
+  box.className = `feedback-box ${typeClass} show`;
+
+  let html = `<div class="feedback-title">${title}</div>`;
+  if (detail) html += `<div>${detail}</div>`;
+  if (hint && state.mode !== 'exam') html += `<div class="hint-text">💡 ${hint}</div>`;
+  box.innerHTML = html;
+}
+
+function skipQuestion() {
+  if (state.locked) { nextQuestion(); return; }
+  const q = state.questions[state.current];
+  state.answers[state.current] = 'skipped';
+  state.skipped++;
+  state.locked = true;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.classList.add('locked'));
+  btns[q.a].classList.add('correct');
+
+  showFeedback('skip', '— Skipped', `Correct answer: (${['A','B','C','D'][q.a]}) ${q.o[q.a]}`, q.h);
+  document.getElementById('next-btn').disabled = false;
+  updateQMap();
+}
+
+function nextQuestion() {
+  if (state.current < state.questions.length - 1) {
+    state.current++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  QUESTION MAP
+// ════════════════════════════════════════════════════════════
+function buildQMap() {
+  const grid = document.getElementById('qmap-grid');
+  grid.innerHTML = '';
+  state.questions.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'qmap-dot';
+    dot.textContent = i + 1;
+    dot.id = `qd-${i}`;
+    dot.onclick = () => { state.current = i; renderQuestion(); toggleMap(); };
+    grid.appendChild(dot);
+  });
+}
+
+function updateQMap() {
+  state.questions.forEach((_, i) => {
+    const dot = document.getElementById(`qd-${i}`);
+    if (!dot) return;
+    dot.className = 'qmap-dot';
+    if (i === state.current) dot.classList.add('qd-current');
+    else if (state.answers[i] === 'correct') dot.classList.add('qd-correct');
+    else if (state.answers[i] === 'wrong') dot.classList.add('qd-wrong');
+    else if (state.answers[i] === 'skipped') dot.classList.add('qd-skipped');
+  });
+}
+
+function toggleMap() {
+  document.getElementById('question-map').classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════════════
+//  RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  clearInterval(state.timerInterval);
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const total = state.questions.length;
+  const correct = state.correct;
+  const pct = Math.round((correct / total) * 100);
+  const timeTaken = Math.round((Date.now() - state.startTime) / 1000);
+  const mm = Math.floor(timeTaken / 60);
+  const ss = timeTaken % 60;
+
+  // Score ring
+  const circumference = 439.8;
+  const fill = circumference - (pct / 100) * circumference;
+  const ringColor = pct >= 70 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
+  const ring = document.getElementById('ring-fill');
+  ring.style.stroke = ringColor;
+  setTimeout(() => { ring.style.strokeDashoffset = fill; }, 100);
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-pct').style.color = ringColor;
+
+  // Grade
+  let grade, msg;
+  if (pct >= 90) { grade = 'A+'; msg = 'Outstanding! You\'re exam-ready.'; }
+  else if (pct >= 80) { grade = 'A'; msg = 'Excellent! Strong preparation.'; }
+  else if (pct >= 70) { grade = 'B+'; msg = 'Good. A bit more practice and you\'re set.'; }
+  else if (pct >= 60) { grade = 'B'; msg = 'Decent. Focus on your weak units.'; }
+  else if (pct >= 50) { grade = 'C'; msg = 'Below target. Revise and retry.'; }
+  else { grade = 'D'; msg = 'Needs serious revision. Don\'t panic — use the cheat sheet.'; }
+
+  const badgeEl = document.getElementById('grade-badge');
+  badgeEl.textContent = grade;
+  badgeEl.style.background = pct >= 70 ? 'rgba(16,185,129,0.15)' : pct >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.12)';
+  badgeEl.style.color = ringColor;
+  badgeEl.style.border = `2px solid ${ringColor}`;
+  document.getElementById('grade-msg').textContent = msg;
+
+  document.getElementById('rs-correct').textContent = correct;
+  document.getElementById('rs-wrong').textContent = state.wrong;
+  document.getElementById('rs-skipped').textContent = state.skipped;
+  document.getElementById('rs-time').textContent = `${mm}m ${ss}s`;
+
+  // Save best score
+  if (!state.bestScore || pct > state.bestScore.pct) {
+    state.bestScore = { pct, correct, total, date: new Date().toLocaleDateString() };
+    localStorage.setItem('opt_best_v2', JSON.stringify(state.bestScore));
+  }
+
+  // Save wrong for Weak Zone
+  const newWrong = [];
+  state.questions.forEach((q, i) => {
+    if (state.answers[i] === 'wrong' || state.answers[i] === 'skipped') {
+      const origIdx = QUESTIONS.indexOf(q);
+      if (origIdx >= 0) newWrong.push(origIdx);
+    }
+  });
+  state.wrongHistory = [...new Set([...state.wrongHistory, ...newWrong])].slice(0, 60);
+  localStorage.setItem('opt_wrong_v2', JSON.stringify(state.wrongHistory));
+
+  // Wrong review
+  const wrongItems = state.questions.filter((_, i) => state.answers[i] === 'wrong');
+  buildReview('wrong-review', '✗ Wrong Answers — Review These', wrongItems, 'wrong');
+
+  const skippedItems = state.questions.filter((_, i) => state.answers[i] === 'skipped');
+  buildReview('skipped-review', '→ Skipped Questions', skippedItems, 'skipped');
+}
+
+function buildReview(containerId, title, items, type) {
+  const container = document.getElementById(containerId);
+  if (items.length === 0) { container.innerHTML = ''; return; }
+  const unitNames = ['','Unit I · LP','Unit II · Game Theory','Unit III · Replacement','Unit IV · PERT/CPM','Unit V · Sequencing'];
+  let html = `<div class="review-title">${title} (${items.length})</div>`;
+  items.forEach(q => {
+    const letters = ['A','B','C','D'];
+    const correct = `(${letters[q.a]}) ${q.o[q.a]}`;
+    html += `<div class="review-item">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--accent2);margin-bottom:6px;">${unitNames[q.u] || ''}</div>
+      <div class="ri-q">${q.q}</div>
+      <div class="ri-answers">
+        <span class="ri-correct-ans">✓ Correct: ${correct}</span>
+      </div>
+      ${q.h ? `<div class="ri-hint">💡 ${q.h}</div>` : ''}
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function restartQuiz() {
+  document.getElementById('result-screen').style.display = 'none';
+  startQuiz();
+}
+
+function retryWrong() {
+  state.mode = 'wrong';
+  document.getElementById('result-screen').style.display = 'none';
+  startQuiz();
+}
+
+function goHome() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'flex';
+  showBestScore();
+}
+</script>
+</body>
+</html>

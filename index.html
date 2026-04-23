@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCA-4004 · Operations Research — Quiz Hub</title>
+<meta name="description" content="Master BCA-4004 Operations Research with 250+ MCQs covering LP, Game Theory, Replacement, PERT/CPM, and Sequencing. Two powerful quiz modes to ace your exams.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --surface: #0d1117;
+  --surface2: #151b27;
+  --border: #1c2536;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --cyan: #22d3ee;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --purple: #a78bfa;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --syne: 'Syne', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* Glow orbs */
+body::after {
+  content: '';
+  position: fixed;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  top: -200px; right: -200px;
+  pointer-events: none; z-index: 0;
+}
+
+.orb-2 {
+  position: fixed;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%);
+  bottom: -150px; left: -150px;
+  pointer-events: none; z-index: 0;
+}
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── NAV BAR ── */
+.nav-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  padding: 16px 20px;
+  background: rgba(13,17,23,0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.nav-brand {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: 2px;
+}
+
+.nav-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+  animation: fadeUp 0.7s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent2);
+  border: 1px solid rgba(6,182,212,0.3);
+  padding: 7px 18px;
+  border-radius: 24px;
+  margin-bottom: 28px;
+  background: rgba(6,182,212,0.06);
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: blink 2s infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+h1 {
+  font-family: var(--syne);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.hero-sub strong { color: var(--text); font-weight: 600; }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 48px;
+  animation: fadeUp 0.7s ease 0.15s both;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 12px;
+  text-align: center;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+
+.stat-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ── QUIZ CARDS ── */
+.cards-section {
+  width: 100%;
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  padding-left: 4px;
+}
+
+.quiz-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.quiz-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+
+.quiz-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(59,130,246,0.04) 100%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.quiz-card:hover::before { opacity: 1; }
+
+.quiz-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(59,130,246,0.12);
+}
+
+.quiz-card:nth-child(2) { animation-delay: 0.4s; }
+.quiz-card:nth-child(2):hover {
+  border-color: var(--yellow);
+  box-shadow: 0 20px 50px rgba(245,158,11,0.1);
+}
+
+.card-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.card-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.card-tag.blue { color: var(--accent); background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); }
+.card-tag.gold { color: var(--yellow); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+
+.card-title {
+  font-family: var(--syne);
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #f8fafc;
+}
+
+.card-desc {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.feature-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.card-cta {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: all 0.25s;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-blue {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+}
+
+.cta-blue:hover { box-shadow: 0 8px 24px rgba(59,130,246,0.35); transform: translateY(-1px); }
+
+.cta-gold {
+  background: linear-gradient(135deg, var(--yellow), #d97706);
+  color: #000;
+}
+
+.cta-gold:hover { box-shadow: 0 8px 24px rgba(245,158,11,0.3); transform: translateY(-1px); }
+
+.card-cta .arrow { transition: transform 0.25s; }
+.quiz-card:hover .card-cta .arrow { transform: translateX(4px); }
+
+/* ── UNITS GRID ── */
+.units-section {
+  width: 100%;
+  margin-bottom: 48px;
+  animation: fadeUp 0.7s ease 0.5s both;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.unit-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 12px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.unit-card:hover {
+  border-color: var(--accent2);
+  transform: translateY(-3px);
+}
+
+.unit-num {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent2);
+  display: block;
+}
+
+.unit-name {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+  font-family: var(--mono);
+  letter-spacing: 0.5px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  animation: fadeUp 0.7s ease 0.6s both;
+}
+
+.footer p {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.footer .heart { color: var(--red); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .quiz-cards { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .units-grid { grid-template-columns: repeat(3, 1fr); }
+  .container { padding: 24px 16px 40px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="orb-2"></div>
+<div class="container">
+
+  <!-- NAV -->
+  <nav class="nav-bar" id="nav-bar">
+    <span class="nav-brand">OR // QUIZ HUB</span>
+    <span class="nav-badge">BCA · SEM IV · CSJM</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero-section">
+    <div class="hero-badge"><span class="dot"></span> Exam Ready 2024</div>
+    <h1>Operations<br>Research<br>Quiz Hub</h1>
+    <p class="hero-sub">
+      <strong>250+ high-probability MCQs</strong> from previous year papers.<br>
+      Two powerful quiz modes. Five units. One goal — <strong>ace your exam</strong>.
+    </p>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--accent)">250+</span>
+      <span class="stat-label">Total Questions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--accent2)">5</span>
+      <span class="stat-label">Units Covered</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--green)">2</span>
+      <span class="stat-label">Quiz Modes</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--yellow)">PYQ</span>
+      <span class="stat-label">Based</span>
+    </div>
+  </div>
+
+  <!-- QUIZ CARDS -->
+  <div class="cards-section" id="quiz-section">
+    <div class="section-title">Choose Your Quiz</div>
+    <div class="quiz-cards">
+
+      <!-- Card 1 -->
+      <div class="quiz-card" id="card-quiz-bank">
+        <span class="card-icon">🧠</span>
+        <span class="card-tag blue">150 Questions</span>
+        <div class="card-title">Optimization MCQ Bank</div>
+        <p class="card-desc">Comprehensive 150-question bank with Practice, Exam, and Weak Zone modes. Unit-wise filtering. Full answer explanations.</p>
+        <div class="card-features">
+          <span class="feature-chip">Practice Mode</span>
+          <span class="feature-chip">Exam Timer</span>
+          <span class="feature-chip">Weak Zone</span>
+          <span class="feature-chip">Question Map</span>
+        </div>
+        <a href="optimization_mcq_quiz_bank.html" class="card-cta cta-blue" id="cta-quiz-bank">
+          Launch Quiz <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="quiz-card" id="card-pu-quiz">
+        <span class="card-icon">📋</span>
+        <span class="card-tag gold">100 Questions</span>
+        <div class="card-title">PU Paper Quiz</div>
+        <p class="card-desc">100 questions from actual Pre-University papers. Instant feedback and Exam modes. Shuffle or original order.</p>
+        <div class="card-features">
+          <span class="feature-chip">Instant Mode</span>
+          <span class="feature-chip">Exam Mode</span>
+          <span class="feature-chip">Review Wrong</span>
+          <span class="feature-chip">Configurable</span>
+        </div>
+        <a href="or_pu_quiz.html" class="card-cta cta-gold" id="cta-pu-quiz">
+          Launch Quiz <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNITS -->
+  <div class="units-section" id="units-section">
+    <div class="section-title">Syllabus Coverage</div>
+    <div class="units-grid">
+      <div class="unit-card"><span class="unit-num">I</span><span class="unit-name">Linear<br>Programming</span></div>
+      <div class="unit-card"><span class="unit-num">II</span><span class="unit-name">Game<br>Theory</span></div>
+      <div class="unit-card"><span class="unit-num">III</span><span class="unit-name">Replacement<br>Theory</span></div>
+      <div class="unit-card"><span class="unit-num">IV</span><span class="unit-name">PERT /<br>CPM</span></div>
+      <div class="unit-card"><span class="unit-num">V</span><span class="unit-name">Sequencing<br>Problems</span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer">
+    <p>Built with <span class="heart">♥</span> for BCA Semester IV · CSJM University</p>
+  </footer>
+
+</div>
+</body>
+</html>
